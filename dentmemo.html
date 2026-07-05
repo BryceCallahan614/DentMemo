@@ -741,7 +741,7 @@
             <table class="term-table" id="termTable">
                 <thead>
                     <tr>
-                        <th class="checkbox-cell">暂不</th>
+                        <th class="checkbox-cell">不默了</th>
                         <th>中文名词</th>
                         <th style="width: 120px;">学习状态</th>
                     </tr>
@@ -1581,7 +1581,8 @@
                 const current = this.studyQueue[this.currentIndex];
                 const input = document.getElementById('dictationInput').value.trim();
                 
-                if (this.normalizeText(input) === this.normalizeText(current.definition)) {
+                // 使用新的 normalizeAnswer 函数进行答案比较，忽略双引号
+                if (this.normalizeAnswer(input) === this.normalizeAnswer(current.definition)) {
                     this.storage.updateState(current.chinese,{
                         state: 'mastered'
                     });
@@ -1602,6 +1603,22 @@
                 }
             }
 
+            // 新增：统一的答案预处理函数，用于默写模式答案判定
+            normalizeAnswer(text) {
+                if (!text) return '';
+                let result = text.trim(); // 1. 去除首尾空格
+                // 2. 删除所有引号字符：
+                // \u0022 = " 英文双引号
+                // \u0027 = ' 英文单引号  
+                // \u201c = " 中文左双引号
+                // \u201d = " 中文右双引号
+                // \u2018 = ' 中文左单引号
+                // \u2019 = ' 中文右单引号
+                result = result.replace(/[\u0022\u0027\u201c\u201d\u2018\u2019]/g, '');
+                return result;
+            }
+
+            // 原有的 normalizeText 保持不变（用于其他地方）
             normalizeText(text) {
                 return text.replace(/\s+/g, '').replace(/[，。；：""''（）()]/g, '');
             }
