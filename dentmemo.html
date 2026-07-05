@@ -1472,8 +1472,18 @@
                 definitionEl.dataset.blurState = 'blurred';
                 definitionEl.classList.add('blurred');
 
+                // 新增：设置所有重点内容初始状态为模糊
                 this.highlightStates.clear();
+                // 将所有重点内容标记为已模糊（初始状态）
+                for (const highlight of current.highlights) {
+                    this.highlightStates.set(highlight, true); // true 表示模糊
+                }
+                
                 this.bindHighlightEvents();
+                
+                // 新增：给所有高亮元素添加模糊样式
+                const highlights = definitionEl.querySelectorAll('.highlight');
+                highlights.forEach(el => el.classList.add('blurred'));
             }
 
             bindHighlightEvents() {
